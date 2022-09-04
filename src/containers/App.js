@@ -1,31 +1,30 @@
-import React, { Component } from "react";
+import React from "react";
 import CardList from "../components/CardList";
 import SearchBox from "../components/SearchBox";
 import Scroll from "../components/Scroll";
 import './app.scss'
+import { useState, useEffect } from "react";
 
 
-class App extends Component {
-  constructor() {
-    super()
-    this.state = {
-      robots: [],
-      searchField: ''
-    }
+function App () {
+
+  const [robots, setRobots] = useState([]);
+  const [searchField, setSearchField] = useState('');
+  const [count, setCount] = useState(0);
+  
+
+useEffect(() => {
+  fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response =>  response.json())
+    .then(users => setRobots(users))
+    console.log(count);
+}, [count]) 
+
+  const onSearchChange = (filter) => {
+    setSearchField(filter)  
   }
 
-  componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response => response.json())
-    .then(users => this.setState({robots: users}))
-  }
 
-  onSearchChange = (filter) => {
-    this.setState({ searchField: filter})  
-  }
-
-  render() {
-    const { robots, searchField } = this.state;
     const filteredRobots = robots.filter(robot => {
       return robot.name.toLowerCase().includes(searchField.toLowerCase())
     })
@@ -35,14 +34,15 @@ class App extends Component {
       return (
         <div className="tc">
           <h1>RoboFriends</h1>
-          <SearchBox onSearchChange={this.onSearchChange}/>
+          <button onClick={() => setCount(count + 1)}>Click Me {count} </button>
+          <button onClick={() => setCount(0)}>Reset</button>
+          <SearchBox onSearchChange={onSearchChange}/>
           <Scroll>
             <CardList robots={filteredRobots}/>
           </Scroll>
         </div>
       )
     }
-  }
 }
 
 
